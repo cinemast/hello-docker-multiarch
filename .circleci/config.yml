@@ -7,9 +7,6 @@ commands:
         type: string
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: 18.09.3
       - run: |
           apk add make docker
           docker version
@@ -19,20 +16,17 @@ commands:
           docker push cinemast/hello-docker-multiarch:<< parameters.arch >>-latest
 jobs:
   "build-amd64":
-    docker:
-      - image: alpine:latest
+    machine: true
     steps:
       - build_image:
           arch: amd64
   "build-arm64v8":
-    docker:
-      - image: alpine:latest
+    machine: true
     steps:
       - build_image:
           arch: arm64v8
   "build-arm32v6":
-    docker:
-      - image: alpine:latest
+    machine: true
     steps:
       - build_image:
           arch: arm32v6
