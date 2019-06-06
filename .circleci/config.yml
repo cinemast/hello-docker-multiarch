@@ -8,7 +8,6 @@ commands:
     steps:
       - checkout
       - run: |
-          apk add make docker
           docker version
           docker run --rm --privileged multiarch/qemu-user-static:register
           make << parameters.arch >>
