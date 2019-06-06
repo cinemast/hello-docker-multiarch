@@ -2,13 +2,13 @@ version: 2.1
 jobs:
   "build-amd64":
     docker:
-      - image: debian:latest
+      - image: alpine:latest
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
-          apt install make
+          apk add make
           #docker login -u $DOCKER_USER -p $DOCKER_PASS
           make amd64
           docker push cinemast/hello-docker-multiarch:latest
