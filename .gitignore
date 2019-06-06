@@ -1,3 +1,5 @@
 a.out
 hello-world
+*.tar.gz
+qemu-*-static
 .vscode/*
