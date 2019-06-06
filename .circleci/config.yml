@@ -8,6 +8,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
+          apt install make
           #docker login -u $DOCKER_USER -p $DOCKER_PASS
           make amd64
           docker push cinemast/hello-docker-multiarch:latest
