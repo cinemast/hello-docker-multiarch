@@ -10,6 +10,7 @@ jobs:
       - run: |
           apk add make docker
           make amd64
+          docker version
           echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
           docker push cinemast/hello-docker-multiarch:amd64-latest
   "build-arm64v8":
