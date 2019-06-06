@@ -28,10 +28,10 @@ run-image:
 	docker run -p1234:1234 -it cinemast/hello-docker-multiarch /usr/bin/hello-world
 
 manifest:
-	docker manifest create $(PROJECT):latest $(PROJECT):arm64v8-latest $(PROJECT):arm32v6-latest $(PROJECT):amd64-latest
-	docker manifest create $(PROJECT):$(VERSION) $(PROJECT):arm64v8-$(VERSION) $(PROJECT):arm32v6-$(VERSION) $(PROJECT):amd64-$(VERSION)
+	docker manifest create --amend $(PROJECT):latest $(PROJECT):arm64v8-latest $(PROJECT):arm32v6-latest $(PROJECT):amd64-latest
+	docker manifest create --amend $(PROJECT):$(VERSION) $(PROJECT):arm64v8-$(VERSION) $(PROJECT):arm32v6-$(VERSION) $(PROJECT):amd64-$(VERSION)
 
-all: arm64v8 arm32v6 amd64 manifest
+images: arm64v8 arm32v6 amd64
 	docker manifest create $(PROJECT):arm64v8 $(PROJECT):arm32v6 $(PROJECT):amd64
 
 push-images:
@@ -42,7 +42,7 @@ push-images:
 	docker push $(PROJECT):amd64-latest
 	docker push $(PROJECT):amd64-$(VERSION)
 
-push-manifests:
+push-manifests: manifest
 	docker manifest push $(PROJECT):latest
 	docker manifest push $(PROJECT):$(VERSION)
 
@@ -51,3 +51,4 @@ push: push-images push-manifests
 
 clean:
 	rm -f hello-world a.out qemu-*-static x86_64_qemu-*.tar.gz
+	docker images | grep $(PROJECT) | tr -s ' ' | cut -d ' ' -f 2 | xargs -I {} docker rmi $(PROJECT):{}

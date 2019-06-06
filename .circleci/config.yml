@@ -1,0 +1,13 @@
+version: 2.1
+jobs:
+  "build-arm64v8":
+    docker:
+      - image: debian:latest
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          make amd64
+          docker push cinemast/hello-docker-multiarch:latest
