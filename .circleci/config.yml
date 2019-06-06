@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  "build-arm64v8":
+  "build-amd64":
     docker:
       - image: debian:latest
     steps:
@@ -11,3 +11,8 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           make amd64
           docker push cinemast/hello-docker-multiarch:latest
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "build-amd64"
