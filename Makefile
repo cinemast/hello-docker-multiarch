@@ -4,14 +4,26 @@ VERSION=1.0.0
 CXXFLAGS= -std=c++14 -O3 -Wall -Werror=format-security
 HARDENINGFLAGS= -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fpie
 
-DOCKER_CLI_EXPERIMENTAL=enabled
-ARCHES=amd64 arm64v8 arm32v6 armhf
+QEMU_BASEURL=https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0-2
+ARCHES=amd64 arm64v8 arm32v6 s390x
 
 hello-world: main.cpp httplib.h
 	g++ $(CXXFLAGS) $(HARDENINGFLAGS) main.cpp -o $@ -lpthread
 
-%:
-	docker build --build-arg target_arch=$@ -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
+%: qemu-%-static
+	docker build -f Dockerfile.cross --build-arg target_arch=$@ -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
+
+amd64:
+	docker build -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
+
+qemu-%-static:
+	wget $(QEMU_BASEURL)/$@
+
+qemu-arm64v8-static:
+	wget $(QEMU_BASEURL)/qemu-aarch64-static -O $@
+
+qemu-arm32v6-static:
+	wget $(QEMU_BASEURL)/qemu-arm-static -O $@
 
 run-image:
 	docker run -p1234:1234 -it $(PROJECT)
@@ -32,5 +44,5 @@ push-manifests: manifest
 push: push-images push-manifests
 
 clean:
-	rm -f hello-world a.out qemu-*-static x86_64_qemu-*.tar.gz
+	rm -f hello-world a.out qemu-*-static
 	docker images | grep $(PROJECT) | tr -s ' ' | cut -d ' ' -f 2 | xargs -I {} docker rmi $(PROJECT):{}
