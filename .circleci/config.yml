@@ -12,6 +12,7 @@ commands:
           version: 18.09.3
       - run: |
           apk add make docker
+          docker version
           make << parameters.arch >>
           echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
           docker push cinemast/hello-docker-multiarch:<< parameters.arch >>-latest
