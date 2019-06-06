@@ -12,8 +12,34 @@ jobs:
           make amd64
           echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
           docker push cinemast/hello-docker-multiarch:amd64-latest
+  "build-arm64v8":
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          apk add make docker
+          make arm64v8
+          echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+          docker push cinemast/hello-docker-multiarch:arm64v8-latest
+  "build-arm32v6":
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          apk add make docker
+          make arm32v6
+          echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+          docker push cinemast/hello-docker-multiarch:arm32v6-latest
 workflows:
   version: 2
   build:
     jobs:
       - "build-amd64"
+      - "build-arm64v8"
+      - "build-arm32v6"
