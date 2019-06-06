@@ -13,18 +13,41 @@ qemu-%-static:
 	tar -xvf x86_64_$@.tar.gz
 
 deps:
-	#docker run --rm --privileged multiarch/qemu-user-static:register
-	for target_arch in $(QEMU_ARCHS); do  done
+	docker run --rm --privileged multiarch/qemu-user-static:register
 
-build-image:
-	docker build -t cinemast/hello-docker-multiarch .
+amd64:
+	docker build --squash -f Dockerfile.amd64 -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
 
-%: qemu-aarch64-static
-	docker build --squash --build-arg TARGET_ARCH=arm64v8 --build-arg QEMU_BIN=$< -t $@ .
+arm64v8: qemu-aarch64-static
+	docker build --squash --build-arg target_arch=$@ --build-arg qemu_bin=$< -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
 
+arm32v6: qemu-arm-static
+	docker build --squash --build-arg target_arch=$@ --build-arg qemu_bin=$< -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
 
 run-image:
 	docker run -p1234:1234 -it cinemast/hello-docker-multiarch /usr/bin/hello-world
+
+manifest:
+	docker manifest create $(PROJECT):latest $(PROJECT):arm64v8-latest $(PROJECT):arm32v6-latest $(PROJECT):amd64-latest
+	docker manifest create $(PROJECT):$(VERSION) $(PROJECT):arm64v8-$(VERSION) $(PROJECT):arm32v6-$(VERSION) $(PROJECT):amd64-$(VERSION)
+
+all: arm64v8 arm32v6 amd64 manifest
+	docker manifest create $(PROJECT):arm64v8 $(PROJECT):arm32v6 $(PROJECT):amd64
+
+push-images:
+	docker push $(PROJECT):arm64v8-latest
+	docker push $(PROJECT):arm64v8-$(VERSION)
+	docker push $(PROJECT):arm32v6-latest
+	docker push $(PROJECT):arm32v6-$(VERSION)
+	docker push $(PROJECT):amd64-latest
+	docker push $(PROJECT):amd64-$(VERSION)
+
+push-manifests:
+	docker manifest push $(PROJECT):latest
+	docker manifest push $(PROJECT):$(VERSION)
+
+push: push-images push-manifests
+	
 
 clean:
 	rm -f hello-world a.out qemu-*-static x86_64_qemu-*.tar.gz
