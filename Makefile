@@ -16,13 +16,13 @@ deps:
 	docker run --rm --privileged multiarch/qemu-user-static:register
 
 amd64:
-	docker build --squash -f Dockerfile.amd64 -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
+	docker build -f Dockerfile.amd64 -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
 
 arm64v8: qemu-aarch64-static
-	docker build --squash --build-arg target_arch=$@ --build-arg qemu_bin=$< -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
+	docker build --build-arg target_arch=$@ --build-arg qemu_bin=$< -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
 
 arm32v6: qemu-arm-static
-	docker build --squash --build-arg target_arch=$@ --build-arg qemu_bin=$< -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
+	docker build --build-arg target_arch=$@ --build-arg qemu_bin=$< -t $(PROJECT):$@-latest -t $(PROJECT):$@-$(VERSION) .
 
 run-image:
 	docker run -p1234:1234 -it cinemast/hello-docker-multiarch /usr/bin/hello-world
