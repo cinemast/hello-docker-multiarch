@@ -1,6 +1,6 @@
 version: 2.1
 commands:
-  buildImage:
+  build_image:
     description: "Build docker image for specific arch"
     parameters:
       arch:
@@ -20,19 +20,19 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
-      - buildImage:
+      - build_image:
           arch: amd64
   "build-arm64v8":
     docker:
       - image: alpine:latest
     steps:
-      - buildImage:
+      - build_image:
           arch: arm64v8
   "build-arm32v6":
     docker:
       - image: alpine:latest
     steps:
-      - buildImage:
+      - build_image:
           arch: arm32v6
 workflows:
   version: 2
