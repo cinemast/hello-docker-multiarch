@@ -11,10 +11,10 @@ commands:
           docker_layer_caching: true
           version: 18.09.3
       - run: |
-        apk add make docker
-        make << parameters.arch >>
-        echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
-        docker push cinemast/hello-docker-multiarch:<< parameters.arch >>-latest
+          apk add make docker
+          make << parameters.arch >>
+          echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+          docker push cinemast/hello-docker-multiarch:<< parameters.arch >>-latest
 jobs:
   "build-amd64":
     docker:
