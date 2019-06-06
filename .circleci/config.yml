@@ -9,8 +9,8 @@ jobs:
           docker_layer_caching: true
       - run: |
           apk add make docker
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
           make amd64
+          echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
           docker push cinemast/hello-docker-multiarch:amd64-latest
 workflows:
   version: 2
