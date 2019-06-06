@@ -13,6 +13,7 @@ commands:
       - run: |
           apk add make docker
           docker version
+          docker run --rm --privileged multiarch/qemu-user-static:register
           make << parameters.arch >>
           echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
           docker push cinemast/hello-docker-multiarch:<< parameters.arch >>-latest
